@@ -136,36 +136,51 @@ fn aux_is_leaf(node: &LinkNode) -> bool {
 fn aux_lossless_compression(node: &LinkNode) {
     if node.is_some() {
         {
-            let mut n: std::cell::RefMut<Node> = node.as_ref().unwrap().borrow_mut();
-            if aux_is_leaf(&n.no) && aux_is_leaf(&n.ne) && aux_is_leaf(&n.se) && aux_is_leaf(&n.so)
             {
-                let no_el: Option<Rc<RefCell<(Option<Rgba<u8>>, u32, u32, u32, u32)>>> =
-                    n.no.as_ref().unwrap().borrow().el.clone();
-                let ne_el: Option<Rc<RefCell<(Option<Rgba<u8>>, u32, u32, u32, u32)>>> =
-                    n.ne.as_ref().unwrap().borrow().el.clone();
-                let se_el: Option<Rc<RefCell<(Option<Rgba<u8>>, u32, u32, u32, u32)>>> =
-                    n.se.as_ref().unwrap().borrow().el.clone();
-                let so_el: Option<Rc<RefCell<(Option<Rgba<u8>>, u32, u32, u32, u32)>>> =
-                    n.so.as_ref().unwrap().borrow().el.clone();
-                if no_el == ne_el && ne_el == se_el && se_el == so_el {
-                    n.el = Some(Rc::new(RefCell::new((
-                        no_el.as_ref().unwrap().borrow().0,
-                        no_el.as_ref().unwrap().borrow().1,
-                        no_el.as_ref().unwrap().borrow().2,
-                        no_el.as_ref().unwrap().borrow().3,
-                        no_el.as_ref().unwrap().borrow().4,
-                    ))));
+                let mut n: std::cell::RefMut<Node> = node.as_ref().unwrap().borrow_mut();
+                if aux_is_leaf(&n.no)
+                    && aux_is_leaf(&n.ne)
+                    && aux_is_leaf(&n.se)
+                    && aux_is_leaf(&n.so)
+                {
+                    let no_el: Option<Rc<RefCell<(Option<Rgba<u8>>, u32, u32, u32, u32)>>> =
+                        n.no.as_ref().unwrap().borrow().el.clone();
+                    let ne_el: Option<Rc<RefCell<(Option<Rgba<u8>>, u32, u32, u32, u32)>>> =
+                        n.ne.as_ref().unwrap().borrow().el.clone();
+                    let se_el: Option<Rc<RefCell<(Option<Rgba<u8>>, u32, u32, u32, u32)>>> =
+                        n.se.as_ref().unwrap().borrow().el.clone();
+                    let so_el: Option<Rc<RefCell<(Option<Rgba<u8>>, u32, u32, u32, u32)>>> =
+                        n.so.as_ref().unwrap().borrow().el.clone();
+                    if no_el.as_ref().unwrap().borrow().0 == ne_el.as_ref().unwrap().borrow().0
+                        && ne_el.as_ref().unwrap().borrow().0 == se_el.as_ref().unwrap().borrow().0
+                        && se_el.as_ref().unwrap().borrow().0 == so_el.as_ref().unwrap().borrow().0
+                    {
+                        n.el = Some(Rc::new(RefCell::new((
+                            no_el.as_ref().unwrap().borrow().0,
+                            no_el.as_ref().unwrap().borrow().1,
+                            no_el.as_ref().unwrap().borrow().2,
+                            no_el.as_ref().unwrap().borrow().3,
+                            no_el.as_ref().unwrap().borrow().4,
+                        ))));
 
-                    n.no = None;
-                    n.ne = None;
-                    n.se = None;
-                    n.so = None;
+                        n.no = None;
+                        n.ne = None;
+                        n.se = None;
+                        n.so = None;
+                    }
                 }
             }
-            aux_lossless_compression(&n.no);
-            aux_lossless_compression(&n.ne);
-            aux_lossless_compression(&n.se);
-            aux_lossless_compression(&n.so);
+            let s = aux_byte_size(node);
+            {
+                let n: std::cell::RefMut<Node> = node.as_ref().unwrap().borrow_mut();
+                aux_lossless_compression(&n.no);
+                aux_lossless_compression(&n.ne);
+                aux_lossless_compression(&n.se);
+                aux_lossless_compression(&n.so);
+            }
+            if aux_byte_size(node) != s {
+                aux_lossless_compression(node)
+            }
         }
     }
 }

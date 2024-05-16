@@ -173,9 +173,9 @@ fn average_color(colors: &Vec<Rgba<u8>>) -> Rgba<u8> {
     let sum_channel = colors.iter().fold((0, 0, 0, 0), |acc, elm| {
         (
             acc.0 + elm.0[0] as u32,
-            acc.0 + elm.0[1] as u32,
-            acc.0 + elm.0[2] as u32,
-            acc.0 + elm.0[3] as u32,
+            acc.1 + elm.0[1] as u32,
+            acc.2 + elm.0[2] as u32,
+            acc.3 + elm.0[3] as u32,
         )
     });
     let n = colors.len() as u32;
